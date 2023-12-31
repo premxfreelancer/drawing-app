@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing App</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        canvas {
+            border: 1px solid black;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas"></canvas>
+    <input type="color" id="color" value="#000000">
+
+    <script>
+        // Get the canvas element and its 2d context
+        const canvas = document.querySelector('.canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set initial drawing properties
+        let isDrawing = false;
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+
+        // Set initial canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Event listeners for drawing
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        window.addEventListener('resize', resizeCanvas);
+
+        // Initial position
+        let lastX = 0;
+        let lastY = 0;
+
+        function startDrawing(e) {
+            isDrawing = true;
+
+            // Set the line color
+            ctx.strokeStyle = document.getElementById('color').value;
+
+            // Move to the initial position
+            lastX = e.clientX - canvas.getBoundingClientRect().left;
+            lastY = e.clientY - canvas.getBoundingClientRect().top;
+
+            // Draw a dot at the initial position
+            drawDot(lastX, lastY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+
+            // Draw a line to the current mouse position
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
+            ctx.stroke();
+
+            // Update the last position
+            lastX = e.clientX - canvas.getBoundingClientRect().left;
+            lastY = e.clientY - canvas.getBoundingClientRect().top;
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function drawDot(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function resizeCanvas() {
+            // Resize canvas to fill the window
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+    </script>
+</body>
+</html>
